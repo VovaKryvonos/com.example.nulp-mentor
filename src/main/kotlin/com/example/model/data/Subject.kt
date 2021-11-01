@@ -7,5 +7,12 @@ data class Subject(
     val id: Int,
     val name: String,
     val course: Int,
-    val mentors: List<User>
+    var mentors: List<User> = emptyList()
+)
+
+@Serializable
+data class SubjectWithoutMentors(
+    val id:Int,
+    val name: String,
+    val course: Int
 )

@@ -1,6 +1,9 @@
 package com.example.database.tables
 
 import com.example.model.data.Subject
+import com.example.model.data.SubjectWithoutMentors
+import com.example.model.data.User
+import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -23,6 +26,12 @@ class SubjectDao(id: EntityID<Int>) : IntEntity(id) {
         course = course,
         id = id.value,
         mentors = mentors.map { it.toUser() }
+    )
+
+    fun toSubjectWithoutMentors() = SubjectWithoutMentors(
+        name = name,
+        course = course,
+        id = id.value
     )
 }
 

@@ -4,6 +4,7 @@ import com.example.database.model.Resources
 import com.example.database.tables.UserDao
 import com.example.database.tables.Users
 import com.example.model.data.User
+import com.example.model.data.UserAllData
 import com.example.res.StringRes
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.*
@@ -11,8 +12,8 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 
 class UserService {
 
-    suspend fun getAllUsers(): List<User> = newSuspendedTransaction {
-        UserDao.all().map { it.toUser() }
+    suspend fun getAllUsers(): List<UserAllData> = newSuspendedTransaction {
+        UserDao.all().map { it.toUserAllData() }
     }
 
     suspend fun getMentors(): List<User> = newSuspendedTransaction {

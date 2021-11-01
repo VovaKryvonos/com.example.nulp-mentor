@@ -5,12 +5,14 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils.create
+import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun configureDatabase() {
     Database.connect(hikari())
     transaction {
-        create(Users, Comments, Rates, Applications, Subjects, Requests)
+        create(Users, Comments, Rates, Applications, Subjects, Requests, MentorsSubjects)
 
         val user = UserDao.new {
             name = "User"
@@ -36,6 +38,10 @@ fun configureDatabase() {
 
         SubjectDao.new {
             name = "Системи штучного інтелекту"
+            course = 3
+        }
+        SubjectDao.new {
+            name = "Проектування інформаційних систем"
             course = 3
         }
 

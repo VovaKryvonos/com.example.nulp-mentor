@@ -1,6 +1,7 @@
 package com.example.database.tables
 
 import com.example.model.data.User
+import com.example.model.data.UserAllData
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -40,8 +41,21 @@ class UserDao(id: EntityID<Int>) : IntEntity(id) {
 
 
     fun toUser(): User {
-        print(comments)
         return User(
+            id = id.value,
+            name = name,
+            surname = surname,
+            email = email,
+            course = course,
+            specialty = specialty,
+            isMentor = isMentor == 1,
+            registerDate = registerDate,
+            rate = rate
+        )
+    }
+
+    fun toUserAllData(): UserAllData{
+        return UserAllData(
             id = id.value,
             name = name,
             surname = surname,
@@ -56,7 +70,7 @@ class UserDao(id: EntityID<Int>) : IntEntity(id) {
             userApplications = userApplications.map { it.toApplication() },
             appeals = appeals.map { it.toApplication() },
             requests = requests.map { it.toRequest() },
-            subjects = subjects.map { it.toSubject() }
+            subjects = subjects.map { it.toSubjectWithoutMentors() }
         )
     }
 }
