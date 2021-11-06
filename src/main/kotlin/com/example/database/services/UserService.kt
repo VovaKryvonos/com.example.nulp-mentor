@@ -3,6 +3,7 @@ package com.example.database.services
 import com.example.database.model.Resources
 import com.example.database.tables.UserDao
 import com.example.database.tables.Users
+import com.example.model.data.Mentor
 import com.example.model.data.User
 import com.example.model.data.UserAllData
 import com.example.res.StringRes
@@ -16,8 +17,8 @@ class UserService {
         UserDao.all().map { it.toUserAllData() }
     }
 
-    suspend fun getMentors(): List<User> = newSuspendedTransaction {
-        UserDao.find { Users.isMentor eq 1 }.map { it.toUser() }
+    suspend fun getMentors(): List<Mentor> = newSuspendedTransaction {
+        UserDao.find { Users.isMentor eq 1 }.map { it.toMentor() }
     }
 
     suspend fun addUser(user: User, pass: String): Resources<User> = newSuspendedTransaction {

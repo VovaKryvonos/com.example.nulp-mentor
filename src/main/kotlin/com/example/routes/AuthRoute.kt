@@ -21,10 +21,13 @@ fun Route.auth(userService: UserService) {
         }
     }
 
+    get("/mentors") {
+        call.respond(HttpStatusCode.OK, userService.getMentors())
+    }
+
     route("/signin") {
         post("/email") {
             val body = call.receive<LoginBody>()
-            println(body)
             val result = userService.login(body.email, body.password)
             if (result is Resources.Error){
                 call.respond(HttpStatusCode.Forbidden, Error(result.message?:"", HttpStatusCode.Forbidden.value))

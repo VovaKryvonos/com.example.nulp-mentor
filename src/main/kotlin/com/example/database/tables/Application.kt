@@ -7,11 +7,17 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
 object Applications: IntIdTable() {
+    const val STATE_ACTIVE = 0
+    const val STATE_EXPIRED = 1
+    const val STATE_ACCEPTED = 2
+    const val STATE_REJECTED = 3
+
     val user = reference("user",Users)
     val mentor = reference("mentor", Users)
     val subjectId = integer("subjectId")
     val date = long("date")
     val comment = varchar("comment", 512)
+    val state = integer("sate").default(STATE_ACTIVE)
 }
 
 class ApplicationDao(id: EntityID<Int>): IntEntity(id) {
@@ -21,6 +27,7 @@ class ApplicationDao(id: EntityID<Int>): IntEntity(id) {
     var subjectId by Applications.subjectId
     var date by Applications.date
     var comment by Applications.comment
+    var state by Applications.state
 
     fun toApplication() = Application(
         userId = user.id.value,

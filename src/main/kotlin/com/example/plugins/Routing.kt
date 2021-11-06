@@ -1,8 +1,10 @@
 package com.example.plugins
 
+import com.example.database.services.ApplicationService
 import com.example.database.services.RateService
 import com.example.database.services.SubjectService
 import com.example.database.services.UserService
+import com.example.routes.applications
 import com.example.routes.auth
 import com.example.routes.rate
 import com.example.routes.subjects
@@ -17,8 +19,10 @@ fun Application.configureRouting() {
         val userService = UserService()
         val rateService = RateService()
         val subjectService = SubjectService()
+        val applicationService = ApplicationService()
         auth(userService)
         rate(rateService)
         subjects(subjectService)
+        applications(applicationService)
     }
 }

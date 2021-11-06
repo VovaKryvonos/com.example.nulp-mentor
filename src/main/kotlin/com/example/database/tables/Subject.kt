@@ -37,7 +37,7 @@ class SubjectDao(id: EntityID<Int>) : IntEntity(id) {
 
 
 object MentorsSubjects : Table() {
-    val mentor = reference("mentor", Users)
-    val subject = reference("subject", Subjects)
+    private val mentor = reference("mentor", Users)
+    private val subject = reference("subject", Subjects)
     override val primaryKey = PrimaryKey(mentor, subject, name = "PK_StarWarsFilmActors")
 }

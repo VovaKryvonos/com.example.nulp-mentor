@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 fun configureDatabase() {
     Database.connect(hikari())
     transaction {
-        create(Users, Comments, Rates, Applications, Subjects, Requests, MentorsSubjects)
+        create(Users, Comments, Rates, Applications, Subjects, Requests, MentorsSubjects, UsersMentors)
 
         val user = UserDao.new {
             name = "User"
