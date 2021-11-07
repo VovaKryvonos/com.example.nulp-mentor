@@ -21,7 +21,7 @@ class SubjectService {
         }
     }
 
-    suspend fun subscribe(body: SubscribeToSubjectBody): Resources<Nothing?> = newSuspendedTransaction {
+    suspend fun subscribe(body: SubscribeToSubjectBody): Resources<Void?> = newSuspendedTransaction {
         try {
             val subject = SubjectDao[body.subjectId]
             val mentor = UserDao[body.mentorId]

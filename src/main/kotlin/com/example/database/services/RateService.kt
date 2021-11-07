@@ -14,7 +14,7 @@ import kotlin.math.abs
 
 class RateService {
 
-    suspend fun addComment(comment: CommentBody): Resources<Nothing?> = newSuspendedTransaction {
+    suspend fun addComment(comment: CommentBody): Resources<Void?> = newSuspendedTransaction {
         val mentor = try {
             UserDao[comment.mentorId]
         } catch (e: EntityNotFoundException) {

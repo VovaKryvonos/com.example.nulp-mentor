@@ -80,7 +80,7 @@ class UserDao(id: EntityID<Int>) : IntEntity(id) {
     val comments by CommentDao referrersOn Comments.mentor
     val userApplications by ApplicationDao referrersOn Applications.user
     val appeals by ApplicationDao referrersOn Applications.mentor
-    private val requests by RequestDao referrersOn Requests.user
+    val requests by RequestDao referrersOn Requests.user
 
 
     fun toUser(): User {

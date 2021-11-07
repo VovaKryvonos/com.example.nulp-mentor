@@ -8,5 +8,6 @@ data class Request(
     val userId: Int,
     val date: Long,
     val subjectId: Int,
-    val comment: String
+    val comment: String,
+    val state: Int
 )

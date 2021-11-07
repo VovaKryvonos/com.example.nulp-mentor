@@ -35,6 +35,7 @@ class ApplicationDao(id: EntityID<Int>): IntEntity(id) {
         subjectId = subjectId,
         date = date,
         comment = comment,
-        id = id.value
+        id = id.value,
+        state = state
     )
 }

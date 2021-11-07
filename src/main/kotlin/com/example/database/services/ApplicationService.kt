@@ -4,8 +4,8 @@ import com.example.database.model.Resources
 import com.example.database.tables.*
 import com.example.model.data.Application
 import com.example.model.data.MentorsReply
-import com.example.model.requests.ApplicationBody
-import com.example.model.requests.ApplicationReply
+import com.example.model.data.MentorsRequestReply
+import com.example.model.requests.*
 import com.example.res.StringRes
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
@@ -16,7 +16,9 @@ class ApplicationService {
             val user = UserDao[applicationBody.userId]
             val mentor = UserDao[applicationBody.mentorId]
             user.userApplications.map { it.toApplication() }.forEach {
-                if (it.mentorId == mentor.id.value && it.subjectId == applicationBody.subjectId) {
+                if (it.mentorId == mentor.id.value && it.subjectId == applicationBody.subjectId &&
+                    (it.state == Applications.STATE_ACTIVE || it.state == Applications.STATE_ACCEPTED)
+                ) {
                     return@newSuspendedTransaction Resources.Error(StringRes.applicationAlreadyExist)
                 }
             }
@@ -35,7 +37,6 @@ class ApplicationService {
     }
 
     suspend fun replyOnApplication(body: ApplicationReply): Resources<MentorsReply> = newSuspendedTransaction {
-        body.applicationId
         try {
             val application = ApplicationDao[body.applicationId]
             val token = application.user.token
@@ -67,6 +68,64 @@ class ApplicationService {
     suspend fun getMentorsApplication(id: Int): Resources<List<Application>> = newSuspendedTransaction {
         try {
             Resources.Success(UserDao[id].appeals.map { it.toApplication() })
+        } catch (e: Exception) {
+            Resources.Error(StringRes.somethingWentWrong)
+        }
+    }
+
+    suspend fun makeMentorRequest(body: MentorRequestBody): Resources<Void?> = newSuspendedTransaction {
+        try {
+            val user = UserDao[body.userId]
+            val subject = SubjectDao[body.subjectId]
+            user.requests.map { it.toRequest() }.forEach {
+                if (it.subjectId == subject.id.value &&
+                    (it.state == Requests.STATE_ACTIVE || it.state == Requests.STATE_ACCEPTED)) {
+                    return@newSuspendedTransaction Resources.Error(StringRes.applicationAlreadyExist)
+                }
+            }
+            RequestDao.new {
+                this.user = user
+                this.subject = subject
+                this.date = body.date
+                this.comment = body.comment
+            }
+            Resources.Success(null)
+        } catch (e: Exception) {
+            Resources.Error(StringRes.somethingWentWrong)
+        }
+    }
+
+    suspend fun replyToMentorRequest(body: MentorRequestReplyBody): Resources<MentorsRequestReply> =
+        newSuspendedTransaction {
+            try {
+                val request = RequestDao[body.requestId]
+                val token = request.user.token
+                val mentor = UserDao[body.mentorId]
+                val message = String.format(StringRes.mentorsReplyMsg, mentor.name, mentor.surname)
+                val mentorsReply = MentorsRequestReply(
+                    pushMessage = message,
+                    token = token ?: "",
+                    requestId = request.id.value,
+                    comment = request.comment,
+                    mentorsEmail = mentor.email,
+                )
+                UserMentorDao.new {
+                    this.menteeId = request.user.id.value
+                    this.mentorId = mentor.id.value
+                    this.subjectId = request.subject.id.value
+                }
+                request.state = Requests.STATE_ACCEPTED
+                Resources.Success(mentorsReply)
+            } catch (e: Exception) {
+                Resources.Error(StringRes.somethingWentWrong)
+            }
+        }
+
+    suspend fun cancelMentorRequest(body: CancelMentorRequestBody): Resources<Void?> = newSuspendedTransaction {
+        try {
+            val request = RequestDao[body.requestId]
+            request.state = Requests.STATE_CANCELED
+            Resources.Success(null)
         } catch (e: Exception) {
             Resources.Error(StringRes.somethingWentWrong)
         }
