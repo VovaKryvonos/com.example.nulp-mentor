@@ -23,16 +23,19 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
             call.respond(HttpStatusCode.BadRequest, resource.message ?: "")
             return@post
         }
-        call.respond(HttpStatusCode.OK)
         if (resource.data != null) {
-            notificationService.sendNotification(
+            if (notificationService.sendNotification(
                 Notification(
                     includeExternalUserIds = listOf(resource.data),
                     headings = NotificationMessage(en = "test"),
                     contents = NotificationMessage(en = "test"),
                     appId = OneSignalService.ONESIGNAL_APP_ID
                 )
-            )
+            )){
+                call.respond(HttpStatusCode.OK)
+            }else{
+                call.respond(HttpStatusCode.InternalServerError)
+            }
         }
     }
 
@@ -43,16 +46,19 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
             call.respond(HttpStatusCode.BadRequest, resource.message ?: "")
             return@post
         }
-        call.respond(HttpStatusCode.OK)
         if (resource.data != null) {
-            notificationService.sendNotification(
+            if(notificationService.sendNotification(
                 Notification(
                     includeExternalUserIds = listOf(resource.data.token ),
                     headings = NotificationMessage(en = resource.data.pushMessage),
                     contents = NotificationMessage(en = resource.data.comment),
                     appId = OneSignalService.ONESIGNAL_APP_ID
                 )
-            )
+            )){
+                call.respond(HttpStatusCode.OK)
+            }else{
+                call.respond(HttpStatusCode.InternalServerError)
+            }
         }
     }
 
@@ -92,16 +98,19 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
             call.respond(HttpStatusCode.BadRequest, resource.message ?: "")
             return@post
         }
-        call.respond(HttpStatusCode.OK)
         if (resource.data != null) {
-            notificationService.sendNotification(
+            if(notificationService.sendNotification(
                 Notification(
                     includeExternalUserIds = listOf(resource.data.token ),
                     headings = NotificationMessage(en = resource.data.pushMessage),
                     contents = NotificationMessage(en = resource.data.comment),
                     appId = OneSignalService.ONESIGNAL_APP_ID
                 )
-            )
+            )){
+                call.respond(HttpStatusCode.OK)
+            }else{
+                call.respond(HttpStatusCode.InternalServerError)
+            }
         }
     }
 

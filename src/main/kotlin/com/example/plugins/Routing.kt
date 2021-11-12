@@ -27,7 +27,7 @@ fun Application.configureRouting() {
                 serializer = KotlinxSerializer()
             }
         }
-        val apiKey = environment.config.property("onesignal.api_key").toString()
+        val apiKey = environment.config.property("onesignal.api_key").getString()
         val notificationService = OneSignalServiceImpl(client, apiKey)
         auth(userService)
         rate(rateService)
