@@ -113,6 +113,18 @@ class UserDao(id: EntityID<Int>) : IntEntity(id) {
         )
     }
 
+    fun toMentorWithoutMentees() = Mentor(
+        id = id.value,
+        name = name,
+        surname = surname,
+        email = email,
+        course = course,
+        specialty = specialty,
+        isMentor = isMentor == 1,
+        registerDate = registerDate,
+        rate = rate
+    )
+
     fun toUserAllData(): UserAllData {
         return UserAllData(
             id = id.value,

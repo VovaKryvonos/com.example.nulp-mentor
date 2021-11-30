@@ -14,5 +14,6 @@ fun Application.module() {
     configureSerialization()
     configureHTTP()
     configureDatabase()
+    this.launch { bestMentorsReport() }
     this.launch { configureScheduler() }
 }

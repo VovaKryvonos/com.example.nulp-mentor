@@ -11,7 +11,8 @@ data class RegisterBody(
     val email: String,
     val course: Int,
     val specialty: String,
-    val isMentor: Boolean
+    val isMentor: Boolean,
+    val token: String
 )
 
 fun RegisterBody.toUser(): User {
@@ -22,6 +23,6 @@ fun RegisterBody.toUser(): User {
         course = course,
         specialty = specialty,
         isMentor = isMentor,
-        registerDate = System.currentTimeMillis()
+        registerDate = System.currentTimeMillis(),
     )
 }

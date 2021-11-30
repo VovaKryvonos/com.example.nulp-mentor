@@ -20,7 +20,7 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
         val body = call.receive<ApplicationBody>()
         val resource = applicationService.makeAnApplication(body)
         if (resource is Resources.Error) {
-            call.respond(HttpStatusCode.BadRequest, resource.message ?: "")
+            call.respond(HttpStatusCode.BadRequest,  Error(resource.message?:"", HttpStatusCode.BadRequest.value))
             return@post
         }
         if (resource.data != null) {
@@ -34,7 +34,7 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
             )){
                 call.respond(HttpStatusCode.OK)
             }else{
-                call.respond(HttpStatusCode.InternalServerError)
+                call.respond(HttpStatusCode.InternalServerError,Error(StringRes.somethingWentWrong, HttpStatusCode.InternalServerError.value))
             }
         }
     }
@@ -43,7 +43,7 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
         val body = call.receive<ApplicationReply>()
         val resource = applicationService.replyOnApplication(body)
         if (resource is Resources.Error) {
-            call.respond(HttpStatusCode.BadRequest, resource.message ?: "")
+            call.respond(HttpStatusCode.BadRequest,  Error(resource.message?:"", HttpStatusCode.BadRequest.value))
             return@post
         }
         if (resource.data != null) {
@@ -57,7 +57,7 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
             )){
                 call.respond(HttpStatusCode.OK)
             }else{
-                call.respond(HttpStatusCode.InternalServerError)
+                call.respond(HttpStatusCode.InternalServerError, Error(StringRes.somethingWentWrong, HttpStatusCode.InternalServerError.value))
             }
         }
     }
@@ -66,16 +66,27 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
         val id = try {
             call.parameters["mentorId"]?.toInt()
         } catch (e: NumberFormatException) {
-            return@get call.respond(HttpStatusCode.NotFound, StringRes.somethingWentWrong)
+            call.respond(HttpStatusCode.NotFound,Error(StringRes.somethingWentWrong, HttpStatusCode.NotFound.value))
+            return@get
         }
         call.respond(HttpStatusCode.OK, applicationService.getMentorsApplication(id ?: -1).data ?: emptyList())
+    }
+
+    post("/applications") {
+        val body = call.receive<List<Int>>()
+        val resources = applicationService.getApplications(body)
+        if (resources is Resources.Error) {
+            call.respond(HttpStatusCode.NotFound,Error(resources.message ?: "", HttpStatusCode.NotFound.value))
+            return@post
+        }
+        call.respond(HttpStatusCode.OK, resources.data ?: emptyList())
     }
 
     post("/makeMentorRequest") {
         val body = call.receive<MentorRequestBody>()
         val resources = applicationService.makeMentorRequest(body)
         if (resources is Resources.Error) {
-            call.respond(HttpStatusCode.BadRequest, resources.message ?: "")
+            call.respond(HttpStatusCode.NotFound,Error(resources.message ?: "", HttpStatusCode.NotFound.value))
             return@post
         }
         call.respond(HttpStatusCode.OK)
@@ -85,7 +96,7 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
         val body = call.receive<CancelMentorRequestBody>()
         val resources = applicationService.cancelMentorRequest(body)
         if (resources is Resources.Error) {
-            call.respond(HttpStatusCode.BadRequest, resources.message ?: "")
+            call.respond(HttpStatusCode.BadRequest,Error(resources.message ?: "", HttpStatusCode.BadRequest.value))
             return@post
         }
         call.respond(HttpStatusCode.OK)
@@ -95,7 +106,7 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
         val body = call.receive<MentorRequestReplyBody>()
         val resource = applicationService.replyToMentorRequest(body)
         if (resource is Resources.Error) {
-            call.respond(HttpStatusCode.BadRequest, resource.message ?: "")
+            call.respond(HttpStatusCode.BadRequest,Error(resource.message ?: "", HttpStatusCode.BadRequest.value))
             return@post
         }
         if (resource.data != null) {
@@ -109,7 +120,7 @@ fun Route.applications(applicationService: ApplicationService, notificationServi
             )){
                 call.respond(HttpStatusCode.OK)
             }else{
-                call.respond(HttpStatusCode.InternalServerError)
+                call.respond(HttpStatusCode.InternalServerError, Error(StringRes.somethingWentWrong, HttpStatusCode.InternalServerError.value))
             }
         }
     }

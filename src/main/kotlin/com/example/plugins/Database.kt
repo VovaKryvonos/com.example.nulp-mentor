@@ -1,14 +1,22 @@
 package com.example.plugins
 
+import com.example.database.tables.MentorsSubjects
+import com.example.database.tables.RateDao
+import com.example.database.tables.UsersMentors
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.*
+import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.configureDatabase() {
     val user = environment.config.property("database.user").getString()
     val password = environment.config.property("database.password").getString()
-    Database.connect(hikari(user,password))
+    Database.connect(hikari(user, password))
+    transaction {
+        create(UsersMentors)
+    }
 }
 
 private fun hikari(user: String, password: String): HikariDataSource {

@@ -44,4 +44,7 @@ dependencies {
     implementation ("com.zaxxer:HikariCP:3.4.2")
 
     implementation("org.postgresql:postgresql:42.2.24")
+
+    implementation("org.apache.poi:poi:3.9")
+    implementation("org.apache.poi:poi-ooxml:3.9")
 }

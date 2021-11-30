@@ -1,6 +1,7 @@
 package com.example.database.tables
 
 import com.example.model.data.Application
+import com.example.model.data.ApplicationData
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -28,6 +29,16 @@ class ApplicationDao(id: EntityID<Int>): IntEntity(id) {
     var date by Applications.date
     var comment by Applications.comment
     var state by Applications.state
+
+    suspend fun toApplicationData() = ApplicationData(
+        user = user.toUser(),
+        mentor = mentor.toMentorWithoutMentees(),
+        subject = SubjectDao[subjectId].toSubjectWithoutMentors(),
+        date = date,
+        comment = comment,
+        id = id.value,
+        state = state
+    )
 
     fun toApplication() = Application(
         userId = user.id.value,

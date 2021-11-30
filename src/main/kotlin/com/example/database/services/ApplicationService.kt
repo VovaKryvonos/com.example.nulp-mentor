@@ -3,6 +3,7 @@ package com.example.database.services
 import com.example.database.model.Resources
 import com.example.database.tables.*
 import com.example.model.data.Application
+import com.example.model.data.ApplicationData
 import com.example.model.data.MentorsReply
 import com.example.model.data.MentorsRequestReply
 import com.example.model.requests.*
@@ -79,7 +80,8 @@ class ApplicationService {
             val subject = SubjectDao[body.subjectId]
             user.requests.map { it.toRequest() }.forEach {
                 if (it.subjectId == subject.id.value &&
-                    (it.state == Requests.STATE_ACTIVE || it.state == Requests.STATE_ACCEPTED)) {
+                    (it.state == Requests.STATE_ACTIVE || it.state == Requests.STATE_ACCEPTED)
+                ) {
                     return@newSuspendedTransaction Resources.Error(StringRes.applicationAlreadyExist)
                 }
             }
@@ -130,4 +132,45 @@ class ApplicationService {
             Resources.Error(StringRes.somethingWentWrong)
         }
     }
+
+    suspend fun checkRequests() = newSuspendedTransaction {
+        val oneWeek = 1000 * 60 * 60 * 24 * 7
+        for (request in RequestDao.all()){
+            if (System.currentTimeMillis()-request.date>4L*oneWeek){
+                request.delete()
+                continue
+            }
+            if (System.currentTimeMillis()-request.date>oneWeek){
+                request.state = Requests.STATE_EXPIRED
+            }
+        }
+    }
+
+    suspend fun checkApplications() = newSuspendedTransaction {
+        val oneWeek = 1000 * 60 * 60 * 24 * 7
+        for (application in ApplicationDao.all()){
+            if (System.currentTimeMillis()-application.date>4L*oneWeek){
+                application.delete()
+                continue
+            }
+            if (System.currentTimeMillis()-application.date>oneWeek){
+                application.state = Requests.STATE_EXPIRED
+            }
+        }
+    }
+
+    suspend fun getApplications(ids: List<Int>) = newSuspendedTransaction {
+        try {
+            println(ids.toString())
+            val applications = arrayListOf<ApplicationData>()
+            ids.forEach{id->
+                applications.add(ApplicationDao[id].toApplicationData())
+            }
+            Resources.Success(applications)
+        } catch (e: Exception) {
+            Resources.Error(StringRes.somethingWentWrong)
+        }
+    }
+
+
 }

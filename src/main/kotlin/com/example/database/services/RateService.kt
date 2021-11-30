@@ -2,6 +2,7 @@ package com.example.database.services
 
 import com.example.database.model.Resources
 import com.example.database.tables.*
+import com.example.model.data.BestMentor
 import com.example.model.data.Comment
 import com.example.model.data.Rate
 import com.example.model.requests.CommentBody
@@ -61,11 +62,38 @@ class RateService {
             avg += rate.rate
         }
         avg /= mentorsRates.size
+        val mentor = UserDao.find { Users.id eq body.mentorId }.firstOrNull()
+        mentor?.rate = avg
         Resources.Success(Rate(avg))
     }
 
     suspend fun allRates(): List<Rate> = newSuspendedTransaction {
         RateDao.all().map { Rate(it.rate.toFloat()) }
+    }
+
+    suspend fun getBestMentors(): Resources<List<BestMentor>> = newSuspendedTransaction {
+        try {
+            val subjects = SubjectDao.all().toList()
+            val bestMentors = arrayListOf<BestMentor>()
+            for (subject in subjects) {
+                val mentors = subject.mentors.toList()
+                if (mentors.isEmpty()) {
+                    continue
+                }
+                var bestMentor = mentors.first()
+                for (mentor in mentors) {
+                    if (bestMentor.rate < mentor.rate) {
+                        bestMentor = mentor
+                    }
+                }
+                if (bestMentor.rate != -1f) {
+                    bestMentors.add(BestMentor(bestMentor.toMentor(), subject.toSubjectWithoutMentors()))
+                }
+            }
+            Resources.Success(bestMentors)
+        } catch (e: Exception) {
+            Resources.Error(StringRes.somethingWentWrong)
+        }
     }
 
 }

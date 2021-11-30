@@ -12,3 +12,14 @@ data class Application(
     val id: Int,
     val state: Int
 )
+
+@Serializable
+data class ApplicationData(
+    val user: User,
+    val mentor: Mentor,
+    val subject: SubjectWithoutMentors,
+    val date: Long,
+    val comment: String,
+    val id: Int,
+    val state: Int
+)

@@ -5,10 +5,7 @@ import com.example.database.services.RateService
 import com.example.database.services.SubjectService
 import com.example.database.services.UserService
 import com.example.notification.OneSignalServiceImpl
-import com.example.routes.applications
-import com.example.routes.auth
-import com.example.routes.rate
-import com.example.routes.subjects
+import com.example.routes.*
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -31,6 +28,7 @@ fun Application.configureRouting() {
         val notificationService = OneSignalServiceImpl(client, apiKey)
         auth(userService)
         rate(rateService)
+        mentor(userService)
         subjects(subjectService)
         applications(applicationService,notificationService)
     }

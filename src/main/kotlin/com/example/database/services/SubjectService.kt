@@ -13,11 +13,15 @@ import java.lang.Exception
 
 class SubjectService {
 
-    suspend fun getSubjects(): List<Subject> = newSuspendedTransaction {
-        SubjectDao.all().map {
-            it.toSubject().also { subject ->
-                subject.mentors = it.mentors.map { user -> user.toUser() }
-            }
+    suspend fun getSubjects(): Resources<List<Subject>> = newSuspendedTransaction {
+        try {
+            Resources.Success(SubjectDao.all().map {
+                it.toSubject().also { subject ->
+                    subject.mentors = it.mentors.map { user -> user.toUser() }
+                }
+            })
+        }catch (e: Exception){
+            Resources.Error(StringRes.somethingWentWrong)
         }
     }
 
